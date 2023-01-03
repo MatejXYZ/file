@@ -1206,23 +1206,19 @@
                     ("_blank" === t.clickTarget ? "_blank" : "_self") +
                     '" >');
                 var i = t.alt ? t.alt : "";
-                console.info(
-                  "CUSTOM SAS, alt:",
-                  t.alt
-                )(
-                  (e +=
-                    '<img\n\t\t\t\tid="img_' +
-                    t.id +
-                    '"\n\t\t\t\tsrc="' +
-                    t.url +
-                    '"\n\t\t\t\twidth="' +
-                    t.width +
-                    '"\n\t\t\t\tborder="0"\n\t\t\t\theight="' +
-                    t.height +
-                    '"\n\t\t\t\talt="' +
-                    i +
-                    '" />')
-                ),
+                alert("CUSTOM SAS, alt:", t.alt);
+                (e +=
+                  '<img\n\t\t\t\tid="img_' +
+                  t.id +
+                  '"\n\t\t\t\tsrc="' +
+                  t.url +
+                  '"\n\t\t\t\twidth="' +
+                  t.width +
+                  '"\n\t\t\t\tborder="0"\n\t\t\t\theight="' +
+                  t.height +
+                  '"\n\t\t\t\talt="' +
+                  i +
+                  '" />'),
                   "" !== t.oryginalClickUrl && (e += "</a>");
               }
               return e;
