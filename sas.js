@@ -879,7 +879,7 @@
               (this.addElement("img", l, {
                 id: "sas_img_" + this.c.insertionId,
                 src: this.c.creative.url,
-                alt: this.c.creative.alt,
+                alt: JSON.stringify(this.c.creative, null, "\t"),
                 // NOTE - try ... alt: this.c.creative.title
               }),
               this.addElement("div", l, {
