@@ -879,6 +879,8 @@
               (this.addElement("img", l, {
                 id: "sas_img_" + this.c.insertionId,
                 src: this.c.creative.url,
+                alt: this.c.creative.alt,
+                // NOTE - try ... alt: this.c.creative.title
               }),
               this.addElement("div", l, {
                 id: "sas_info_" + this.c.insertionId,
@@ -886,6 +888,7 @@
           (this.addElement("span", d, {
             id: "sas_title_" + this.c.insertionId,
           }).innerHTML = this.limitString(
+            // TEMP
             // this.c.userParams.title,
             "TEST CUSTOM SAS",
             this.c.userParams.nativeTitleMaxLength
