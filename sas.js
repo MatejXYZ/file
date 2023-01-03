@@ -104,8 +104,9 @@
                     continue;
                   default:
                     if (
-                      !(o = (o = l.trys).length > 0 && o[o.length - 1]) &&
-                      (6 === i[0] || 2 === i[0])
+                      ((o = l.trys),
+                      !(o = o.length > 0 && o[o.length - 1]) &&
+                        (6 === i[0] || 2 === i[0]))
                     ) {
                       l = 0;
                       continue;
@@ -167,16 +168,20 @@
           (this.logOn = !1),
           (this.isReady = !1),
           (this.friendlyIframe = null),
-          !t &&
-            (this.getIeVersion(navigator.userAgent) || window.frameElement) &&
-            void 0 !== window.inDapIF &&
-            window.inDapIF)
+          !t)
         ) {
-          this.log("FIF mode");
-          var i = this.getTopWindow();
-          (this.w = i.currentWindow),
-            (this.d = this.w.document),
-            (this.friendlyIframe = i.currentFrame);
+          var i = this.getIeVersion(navigator.userAgent);
+          if (
+            (!!i || window.frameElement) &&
+            void 0 !== window.inDapIF &&
+            window.inDapIF
+          ) {
+            this.log("FIF mode");
+            var n = this.getTopWindow();
+            (this.w = n.currentWindow),
+              (this.d = this.w.document),
+              (this.friendlyIframe = n.currentFrame);
+          }
         }
         this.docReady(function () {
           return (e.isReady = !0);
@@ -224,7 +229,9 @@
           e.addEventListener("load", r, !1);
         }),
         (t.prototype.tracking = function (t) {
-          t && (new Image().src = t);
+          if (t) {
+            new Image().src = t;
+          }
         }),
         (t.prototype.isChild = function (t, e) {
           if (e)
@@ -251,27 +258,23 @@
         (t.prototype.checkTabVisibility = function (t, e) {
           var i = this,
             n = function () {
+              var t = ["webkit", "moz", "ms", "o"];
               if ("hidden" in i.d) return "hidden";
-              for (
-                var t = 0, e = ["webkit", "moz", "ms", "o"];
-                t < e.length;
-                t++
-              ) {
-                var n = e[t];
-                if (n + "Hidden" in document) return n + "Hidden";
+              for (var e = 0, n = t; e < n.length; e++) {
+                var r = n[e];
+                if (r + "Hidden" in document) return r + "Hidden";
               }
               return null;
             },
-            r = n();
-          if (r) {
-            var a = r.replace(/[H|h]idden/, "") + "visibilitychange";
-            this.addEvent(this.d, a, function () {
-              !(function () {
-                var t = n();
-                return !!t && i.d[t];
-              })()
-                ? t()
-                : e();
+            r = function () {
+              var t = n();
+              return !!t && i.d[t];
+            },
+            a = n();
+          if (a) {
+            var o = a.replace(/[H|h]idden/, "") + "visibilitychange";
+            this.addEvent(this.d, o, function () {
+              r() ? e() : t();
             });
           }
         }),
@@ -334,20 +337,23 @@
           t && t.parentNode.removeChild(t);
         }),
         (t.prototype.triggerCustomEvent = function (t, e, i, n) {
-          var r;
-          void 0 === i && (i = null),
+          if (
+            (void 0 === i && (i = null),
             void 0 === n && (n = { width: null, height: null }),
-            t.length &&
-              (this.d.createEvent
-                ? (r = this.d.createEvent("HTMLEvents")).initEvent(t, !0, !0)
-                : ((r = this.d.createEventObject()).eventType = t),
+            t.length)
+          ) {
+            var r;
+            this.d.createEvent
+              ? ((r = this.d.createEvent("HTMLEvents")), r.initEvent(t, !0, !0))
+              : ((r = this.d.createEventObject()), (r.eventType = t)),
               (r.eventName = t),
               null !== i && (r.videoDuration = i),
               null !== n.width && null !== n.height && (r.creativeSize = n),
               (r.formatId = e),
               this.d.createEvent
                 ? this.w.dispatchEvent(r)
-                : this.w.fireEvent("on" + r.eventType, r));
+                : this.w.fireEvent("on" + r.eventType, r);
+          }
         }),
         (t.prototype.getTopWindow = function () {
           for (
@@ -441,105 +447,108 @@
       })();
     Object.defineProperty(e, "__esModule", { value: !0 }),
       (e.ViewabilityCore = void 0);
-    var r = (function (t) {
-      function e() {
-        var e = t.call(this) || this;
+    var r = i(0),
+      a = (function (t) {
+        function e() {
+          var e = t.call(this) || this;
+          return (
+            (e.counterId = 0),
+            (e.hasFocus = !0),
+            (e.isSafeFrame = !1),
+            (e.isAMPFrame = !1),
+            (e.isAmpVisSub = !1),
+            (e.integration = 0),
+            (e.timeCounter = 0),
+            (e.resultLayer = null),
+            (e.playingCreativeId = -1),
+            (e.pixels = {}),
+            (e.threshold = []),
+            (e.elVis = 0),
+            (e.isIOSupported = !1),
+            (e.IOCallbackCalled = !1),
+            e.addEvent(e.w, "focus", function () {
+              return (e.hasFocus = !0);
+            }),
+            e.addEvent(e.w, "blur", function () {
+              return document.activeElement && window.self === window.top
+                ? (e.hasFocus = !0)
+                : (e.hasFocus = !1);
+            }),
+            e.addEvent(e.d, "visibilitychange", function () {
+              e.d.hidden ? (e.hasFocus = !1) : e.checkCurrentState();
+            }),
+            e
+          );
+        }
         return (
-          (e.counterId = 0),
-          (e.hasFocus = !0),
-          (e.isSafeFrame = !1),
-          (e.isAMPFrame = !1),
-          (e.isAmpVisSub = !1),
-          (e.integration = 0),
-          (e.timeCounter = 0),
-          (e.resultLayer = null),
-          (e.playingCreativeId = -1),
-          (e.pixels = {}),
-          (e.threshold = []),
-          (e.elVis = 0),
-          (e.isIOSupported = !1),
-          (e.IOCallbackCalled = !1),
-          e.addEvent(e.w, "focus", function () {
-            return (e.hasFocus = !0);
-          }),
-          e.addEvent(e.w, "blur", function () {
-            return document.activeElement && window.self === window.top
-              ? (e.hasFocus = !0)
-              : (e.hasFocus = !1);
-          }),
-          e.addEvent(e.d, "visibilitychange", function () {
-            e.d.hidden ? (e.hasFocus = !1) : e.checkCurrentState();
-          }),
-          e
-        );
-      }
-      return (
-        n(e, t),
-        (e.prototype.videoHandler = function (t, e) {
-          var i = ["complete", "skip", "AdSkipped", "AdStopped"];
-          i
-            .concat([
-              "pause",
-              "AdPaused",
-              "abort",
-              "emptied",
-              "ended",
-              "error",
-              "seeked",
-              "seeking",
-            ])
-            .indexOf(t) > -1
-            ? (this.playingCreativeId = -1)
-            : [
+          n(e, t),
+          (e.prototype.videoHandler = function (t, e) {
+            var i = [
                 "start",
                 "AdStarted",
                 "AdPlaying",
                 "resume",
                 "play",
                 "playing",
-              ].indexOf(t) > -1 &&
-              ((this.playingCreativeId = e),
+              ],
+              n = ["complete", "skip", "AdSkipped", "AdStopped"];
+            n
+              .concat([
+                "pause",
+                "AdPaused",
+                "abort",
+                "emptied",
+                "ended",
+                "error",
+                "seeked",
+                "seeking",
+              ])
+              .indexOf(t) > -1
+              ? (this.playingCreativeId = -1)
+              : i.indexOf(t) > -1 &&
+                ((this.playingCreativeId = e),
+                void 0 !== this.intersectionObserverCallback &&
+                  0 !== Object.keys(this.pixels).length &&
+                  this.intersectionObserverCallback(
+                    this.lastIntersectionObserverEntry
+                  )),
+              n.indexOf(t) > -1 && this.executePixels(e, "notviewable");
+          }),
+          (e.prototype.updateCreativePixels = function (t, e) {
+            return (
+              this.log("updateCreativePixels"),
+              (this.IOCallbackCalled = !1),
               void 0 !== this.intersectionObserverCallback &&
-                0 !== Object.keys(this.pixels).length &&
                 this.intersectionObserverCallback(
                   this.lastIntersectionObserverEntry
-                )),
-            i.indexOf(t) > -1 && this.executePixels(e, "notviewable");
-        }),
-        (e.prototype.updateCreativePixels = function (t, e) {
-          return (
-            this.log("updateCreativePixels"),
-            (this.IOCallbackCalled = !1),
-            void 0 !== this.intersectionObserverCallback &&
-              this.intersectionObserverCallback(
-                this.lastIntersectionObserverEntry
-              ),
-            (this.pixels[t] = e)
-          );
-        }),
-        (e.prototype.start = function (t, e, i) {
-          var n = this;
-          this.log("start", t, e, i),
-            (this.isIOSupported = this.isIntersectionObserverSupport());
-          var r = this.checkElementStatus(t),
-            a = r.measurable;
-          if (((t = r.element), (this.pixels = e), !t))
-            throw new Error(
-              'Smart Viewability: passed element to measure is not valid and its value is "' +
-                t +
-                '"'
+                ),
+              (this.pixels[t] = e)
             );
-          var o = this.mergeOptions(i, t);
-          o.videoIntegration ||
-            (this.playingCreativeId = Object.keys(e)[0]
-              ? Number(Object.keys(e)[0])
-              : 1),
-            (this.integration = o.videoIntegration),
-            o.logMessages && (this.logOn = !0),
-            o.testLayer && (this.resultLayer = this.addInfoLayer()),
-            i &&
-              i.threshold &&
-              ((this.threshold = i.threshold),
+          }),
+          (e.prototype.start = function (t, e, i) {
+            var n = this;
+            this.log("start", t, e, i),
+              (this.isIOSupported = this.isIntersectionObserverSupport());
+            var r = this.checkElementStatus(t),
+              a = r.measurable;
+            if (((t = r.element), (this.pixels = e), !t))
+              throw new Error(
+                'Smart Viewability: passed element to measure is not valid and its value is "' +
+                  t +
+                  '"'
+              );
+            var o = this.mergeOptions(i, t);
+            if (
+              (o.videoIntegration ||
+                (this.playingCreativeId = Object.keys(e)[0]
+                  ? Number(Object.keys(e)[0])
+                  : 1),
+              (this.integration = o.videoIntegration),
+              o.logMessages && (this.logOn = !0),
+              o.testLayer && (this.resultLayer = this.addInfoLayer()),
+              i && i.threshold)
+            ) {
+              this.threshold = i.threshold;
               this.threshold.forEach(function (t, e) {
                 (t.lastSent = 0),
                   "function" != typeof t.aboveCallback &&
@@ -550,219 +559,226 @@
                     (t.belowCallback = function () {
                       return console.log();
                     });
-              })),
-            t.id || (t.id = "sas_" + new Date().getTime() + "rnd"),
-            this.isIOSupported
-              ? this.initIntersactionObserver(t, o)
-              : (this.counterId = this.w.setInterval(function () {
-                  return n.checkElement(t, o, a);
-                }, 100)),
-            window.addEventListener("beforeunload", function () {
-              n.executePixels(n.playingCreativeId, "notviewable");
-            });
-        }),
-        (e.prototype.checkCurrentState = function () {
-          (this.hasFocus = !0),
-            void 0 === this.intersectionObserverCallback ||
-              this.IOCallbackCalled ||
-              this.intersectionObserverCallback(
-                this.lastIntersectionObserverEntry
-              );
-        }),
-        (e.prototype.initIntersactionObserver = function (t, e) {
-          var i,
-            n,
-            r = this;
-          this.intersectionObserverCallback = function (a) {
-            (r.lastIntersectionObserverEntry = a),
-              a &&
-                a.forEach(function (a) {
-                  r.checkThreshold(100 * a.intersectionRatio),
-                    100 * a.intersectionRatio >= e.area &&
-                    r.playingCreativeId > -1
-                      ? (n = r.w.setTimeout(function () {
-                          r.hasFocus &&
-                            ((r.IOCallbackCalled = !0),
-                            r.triggerViewableEvent(e),
-                            r.integration < 2 && i.unobserve(t));
-                        }, 1e3 * e.delay))
-                      : clearTimeout(n);
-                });
-          };
-          var a = { threshold: e.area / 100 };
-          this.hasFocus &&
-            (i = new this.w.IntersectionObserver(
-              this.intersectionObserverCallback,
-              a
-            )).observe(t);
-        }),
-        (e.prototype.checkElement = function (t, e, i) {
-          if (
-            (this.log("checkElement", t, e),
-            i || this.executePixels(this.playingCreativeId, "undetermined"),
-            !this.d.getElementById(t.id))
-          )
-            return (
-              window.clearInterval(this.counterId),
-              void this.log(
-                "backup exit - in the meantime someone could remove / close the ad",
-                t
-              )
-            );
-          this.isAMPFrame
-            ? this.w.context && !this.isAmpVisSub && this.subscribeAmpVis()
-            : this.isSafeFrame
-            ? (this.elVis = Math.round(this.w.$sf.ext.inViewPercentage()))
-            : (this.elVis = this.getVisibilityPercent(t, e)),
-            this.log("Element visibility " + this.elVis + "%"),
-            this.playingCreativeId > -1 && this.hasFocus && this.elVis >= e.area
-              ? ++this.timeCounter >= 10 * e.delay &&
-                this.triggerViewableEvent(e)
-              : (this.timeCounter = 0),
-            this.checkThreshold(this.elVis);
-        }),
-        (e.prototype.triggerViewableEvent = function (t) {
-          this.log(
-            "Element visible more than " +
-              t.area +
-              "% for " +
-              Math.round(this.timeCounter / 10) +
-              " seconds"
-          ),
-            this.executePixels(this.playingCreativeId, "viewable"),
-            this.executeViewCallback(t),
-            t.testLayer && (this.resultLayer.innerHTML = "&#10004;");
-        }),
-        (e.prototype.executeViewCallback = function (t) {
-          t.viewCallback &&
-            (t.viewCallback(),
-            (t.viewCallback = null),
-            this.log("View callback function called"));
-        }),
-        (e.prototype.checkElementStatus = function (t) {
-          var e = { measurable: !0, element: t };
-          if (!t || window.self === window.top || this.w.self === this.w.top)
-            return this.log("No iframe detected"), e;
-          this.log("Iframe detected");
-          var i = this.getTopWindow();
-          return (
-            (this.w = i.currentWindow),
-            (this.d = this.w.document),
-            (e.element = null === i.currentFrame ? t : i.currentFrame),
-            i.currentWindow.$sf && i.currentWindow.$sf.ext
-              ? (this.log("SafeFrame detected"),
-                (e.element = e.element || t),
-                (this.isSafeFrame = !0))
-              : void 0 !== window.inDapIF && window.inDapIF
-              ? (this.log("Friendly iframe detected"), (e.element = t))
-              : i.currentWindow === window.top
-              ? this.log("Secured iframe detected")
-              : this.isAMP()
-              ? (this.log("AMP iframe detected"), (this.isAMPFrame = !0))
-              : (this.log("Cross-domain iframe detected"),
-                this.isIOSupported || ((e.element = t), (e.measurable = !1))),
-            e
-          );
-        }),
-        (e.prototype.area = function (t) {
-          var e = t.getBoundingClientRect();
-          return (e.right - e.left) * (e.bottom - e.top);
-        }),
-        (e.prototype.addInfoLayer = function () {
-          var t = this.addElement("div", document.body, {
-            id: "testLayer_" + Math.round(1e5 * Math.random()),
-            style:
-              "width:60px;height:30px;position:fixed;top:0;right:0;background-color:yellow;\n\t\t\tcolor:blue;font-size:20px;text-align:center;padding-top:5px;z-index:99999;",
-          });
-          return (t.innerHTML = "0%"), t;
-        }),
-        (e.prototype.checkThreshold = function (t) {
-          for (var e = 0, i = this.threshold; e < i.length; e++) {
-            var n = i[e];
-            n.area > t && n.lastSent <= 0
-              ? (n.belowCallback(), (n.lastSent = 1))
-              : n.area <= t &&
-                n.lastSent >= 0 &&
-                (n.aboveCallback(), (n.lastSent = -1));
-          }
-        }),
-        (e.prototype.mergeOptions = function (t, e) {
-          var i = {
-            area: t && t.area ? t.area : 50,
-            testLayer: !(!t || !t.testLayer) && t.testLayer,
-            logMessages: !(!t || !t.logMessages) && t.logMessages,
-            videoIntegration: t && t.videoIntegration ? t.videoIntegration : 0,
-            threshold: t && t.threshold ? t.threshold : [],
-            viewCallback: t && t.viewCallback ? t.viewCallback : null,
-          };
-          return (
-            t && t.delay
-              ? (i.delay = t.delay)
-              : (i.delay = i.videoIntegration ? 2 : 1),
-            !this.isMobile() &&
-              0 === i.videoIntegration &&
-              e.clientHeight * e.clientWidth > 242500 &&
-              (i.area = 30),
-            i
-          );
-        }),
-        (e.prototype.executePixels = function (t, e) {
-          var i = !1;
-          if (this.pixels[t] && this.pixels[t][e]) {
-            for (var n = 0, r = this.pixels[t][e]; n < r.length; n++) {
-              var a = r[n];
-              this.tracking(a);
-            }
-            (i = !0),
-              delete this.pixels[t],
-              (this.playingCreativeId = -1),
-              this.integration < 2 && this.w.clearInterval(this.counterId);
-          }
-          return this.isAmpVisSub && this.ampListen(), i;
-        }),
-        (e.prototype.getVisibilityPercent = function (t, e) {
-          var i = this.area(t);
-          if (0 === i) return 0;
-          var n = t.getBoundingClientRect(),
-            r = Math.max(
-              0,
-              Math.min(n.bottom, this.w.innerHeight) - Math.max(0, n.top)
-            ),
-            a = Math.max(
-              0,
-              Math.min(n.right, this.w.innerWidth) - Math.max(0, n.left)
-            ),
-            o = Math.round((r * a * 100) / i);
-          return (
-            e.testLayer &&
-              (n.top < 0
-                ? ((this.resultLayer.style.top = "auto"),
-                  (this.resultLayer.style.bottom = "0px"))
-                : ((this.resultLayer.style.top = "0px"),
-                  (this.resultLayer.style.bottom = "auto")),
-              (this.resultLayer.innerHTML = o + "%")),
-            o
-          );
-        }),
-        (e.prototype.subscribeAmpVis = function () {
-          var t = this;
-          (this.isAmpVisSub = !0),
-            (this.ampListen = this.w.context.observeIntersection(function (e) {
-              e.forEach(function (e) {
-                t.elVis = 100 * e.intersectionRatio;
               });
-            }));
-        }),
-        (e.prototype.isIntersectionObserverSupport = function () {
-          return (
-            "IntersectionObserver" in this.w &&
-            "IntersectionObserverEntry" in this.w
-          );
-        }),
-        e
-      );
-    })(i(0).Global);
-    e.ViewabilityCore = r;
+            }
+            t.id || (t.id = "sas_" + new Date().getTime() + "rnd"),
+              this.isIOSupported
+                ? this.initIntersactionObserver(t, o)
+                : (this.counterId = this.w.setInterval(function () {
+                    return n.checkElement(t, o, a);
+                  }, 100)),
+              window.addEventListener("beforeunload", function () {
+                n.executePixels(n.playingCreativeId, "notviewable");
+              });
+          }),
+          (e.prototype.checkCurrentState = function () {
+            (this.hasFocus = !0),
+              void 0 === this.intersectionObserverCallback ||
+                this.IOCallbackCalled ||
+                this.intersectionObserverCallback(
+                  this.lastIntersectionObserverEntry
+                );
+          }),
+          (e.prototype.initIntersactionObserver = function (t, e) {
+            var i,
+              n,
+              r = this;
+            this.intersectionObserverCallback = function (a) {
+              (r.lastIntersectionObserverEntry = a),
+                a &&
+                  a.forEach(function (a) {
+                    r.checkThreshold(100 * a.intersectionRatio),
+                      100 * a.intersectionRatio >= e.area &&
+                      r.playingCreativeId > -1
+                        ? (n = r.w.setTimeout(function () {
+                            r.hasFocus &&
+                              ((r.IOCallbackCalled = !0),
+                              r.triggerViewableEvent(e),
+                              r.integration < 2 && i.unobserve(t));
+                          }, 1e3 * e.delay))
+                        : clearTimeout(n);
+                  });
+            };
+            var a = { threshold: e.area / 100 };
+            this.hasFocus &&
+              ((i = new this.w.IntersectionObserver(
+                this.intersectionObserverCallback,
+                a
+              )),
+              i.observe(t));
+          }),
+          (e.prototype.checkElement = function (t, e, i) {
+            if (
+              (this.log("checkElement", t, e),
+              i || this.executePixels(this.playingCreativeId, "undetermined"),
+              !this.d.getElementById(t.id))
+            )
+              return (
+                window.clearInterval(this.counterId),
+                void this.log(
+                  "backup exit - in the meantime someone could remove / close the ad",
+                  t
+                )
+              );
+            this.isAMPFrame
+              ? this.w.context && !this.isAmpVisSub && this.subscribeAmpVis()
+              : this.isSafeFrame
+              ? (this.elVis = Math.round(this.w.$sf.ext.inViewPercentage()))
+              : (this.elVis = this.getVisibilityPercent(t, e)),
+              this.log("Element visibility " + this.elVis + "%"),
+              this.playingCreativeId > -1 &&
+              this.hasFocus &&
+              this.elVis >= e.area
+                ? ++this.timeCounter >= 10 * e.delay &&
+                  this.triggerViewableEvent(e)
+                : (this.timeCounter = 0),
+              this.checkThreshold(this.elVis);
+          }),
+          (e.prototype.triggerViewableEvent = function (t) {
+            this.log(
+              "Element visible more than " +
+                t.area +
+                "% for " +
+                Math.round(this.timeCounter / 10) +
+                " seconds"
+            ),
+              this.executePixels(this.playingCreativeId, "viewable"),
+              this.executeViewCallback(t),
+              t.testLayer && (this.resultLayer.innerHTML = "&#10004;");
+          }),
+          (e.prototype.executeViewCallback = function (t) {
+            t.viewCallback &&
+              (t.viewCallback(),
+              (t.viewCallback = null),
+              this.log("View callback function called"));
+          }),
+          (e.prototype.checkElementStatus = function (t) {
+            var e = { measurable: !0, element: t };
+            if (!t || window.self === window.top || this.w.self === this.w.top)
+              return this.log("No iframe detected"), e;
+            this.log("Iframe detected");
+            var i = this.getTopWindow();
+            return (
+              (this.w = i.currentWindow),
+              (this.d = this.w.document),
+              (e.element = null === i.currentFrame ? t : i.currentFrame),
+              i.currentWindow.$sf && i.currentWindow.$sf.ext
+                ? (this.log("SafeFrame detected"),
+                  (e.element = e.element || t),
+                  (this.isSafeFrame = !0))
+                : void 0 !== window.inDapIF && window.inDapIF
+                ? (this.log("Friendly iframe detected"), (e.element = t))
+                : i.currentWindow === window.top
+                ? this.log("Secured iframe detected")
+                : this.isAMP()
+                ? (this.log("AMP iframe detected"), (this.isAMPFrame = !0))
+                : (this.log("Cross-domain iframe detected"),
+                  this.isIOSupported || ((e.element = t), (e.measurable = !1))),
+              e
+            );
+          }),
+          (e.prototype.area = function (t) {
+            var e = t.getBoundingClientRect();
+            return (e.right - e.left) * (e.bottom - e.top);
+          }),
+          (e.prototype.addInfoLayer = function () {
+            var t = this.addElement("div", document.body, {
+              id: "testLayer_" + Math.round(1e5 * Math.random()),
+              style:
+                "width:60px;height:30px;position:fixed;top:0;right:0;background-color:yellow;\n\t\t\tcolor:blue;font-size:20px;text-align:center;padding-top:5px;z-index:99999;",
+            });
+            return (t.innerHTML = "0%"), t;
+          }),
+          (e.prototype.checkThreshold = function (t) {
+            for (var e = 0, i = this.threshold; e < i.length; e++) {
+              var n = i[e];
+              n.area > t && n.lastSent <= 0
+                ? (n.belowCallback(), (n.lastSent = 1))
+                : n.area <= t &&
+                  n.lastSent >= 0 &&
+                  (n.aboveCallback(), (n.lastSent = -1));
+            }
+          }),
+          (e.prototype.mergeOptions = function (t, e) {
+            var i = {
+              area: t && t.area ? t.area : 50,
+              testLayer: !(!t || !t.testLayer) && t.testLayer,
+              logMessages: !(!t || !t.logMessages) && t.logMessages,
+              videoIntegration:
+                t && t.videoIntegration ? t.videoIntegration : 0,
+              threshold: t && t.threshold ? t.threshold : [],
+              viewCallback: t && t.viewCallback ? t.viewCallback : null,
+            };
+            return (
+              t && t.delay
+                ? (i.delay = t.delay)
+                : (i.delay = i.videoIntegration ? 2 : 1),
+              !this.isMobile() &&
+                0 === i.videoIntegration &&
+                e.clientHeight * e.clientWidth > 242500 &&
+                (i.area = 30),
+              i
+            );
+          }),
+          (e.prototype.executePixels = function (t, e) {
+            var i = !1;
+            if (this.pixels[t] && this.pixels[t][e]) {
+              for (var n = 0, r = this.pixels[t][e]; n < r.length; n++) {
+                var a = r[n];
+                this.tracking(a);
+              }
+              (i = !0),
+                delete this.pixels[t],
+                (this.playingCreativeId = -1),
+                this.integration < 2 && this.w.clearInterval(this.counterId);
+            }
+            return this.isAmpVisSub && this.ampListen(), i;
+          }),
+          (e.prototype.getVisibilityPercent = function (t, e) {
+            var i = this.area(t);
+            if (0 === i) return 0;
+            var n = t.getBoundingClientRect(),
+              r = Math.max(
+                0,
+                Math.min(n.bottom, this.w.innerHeight) - Math.max(0, n.top)
+              ),
+              a = Math.max(
+                0,
+                Math.min(n.right, this.w.innerWidth) - Math.max(0, n.left)
+              ),
+              o = Math.round((r * a * 100) / i);
+            return (
+              e.testLayer &&
+                (n.top < 0
+                  ? ((this.resultLayer.style.top = "auto"),
+                    (this.resultLayer.style.bottom = "0px"))
+                  : ((this.resultLayer.style.top = "0px"),
+                    (this.resultLayer.style.bottom = "auto")),
+                (this.resultLayer.innerHTML = o + "%")),
+              o
+            );
+          }),
+          (e.prototype.subscribeAmpVis = function () {
+            var t = this;
+            (this.isAmpVisSub = !0),
+              (this.ampListen = this.w.context.observeIntersection(function (
+                e
+              ) {
+                e.forEach(function (e) {
+                  t.elVis = 100 * e.intersectionRatio;
+                });
+              }));
+          }),
+          (e.prototype.isIntersectionObserverSupport = function () {
+            return (
+              "IntersectionObserver" in this.w &&
+              "IntersectionObserverEntry" in this.w
+            );
+          }),
+          e
+        );
+      })(r.Global);
+    e.ViewabilityCore = a;
   },
   20: function (t, e, i) {
     "use strict";
@@ -793,261 +809,264 @@
       })();
     Object.defineProperty(e, "__esModule", { value: !0 }),
       (e.EasyNativeAd = void 0);
-    var r = (function (t) {
-      function e(e) {
-        var i = t.call(this, e) || this;
-        return (i.c = e), i;
-      }
-      return (
-        n(e, t),
-        (e.prototype.prepareParams = function (t) {
-          var e, i;
-          if (
-            (this.log("Prepare params"),
-            this.c.creative.width && this.c.creative.height)
-          ) {
-            var n = this.c.creative.width / this.c.creative.height;
-            this.log(
-              "Values from bid response, width: " +
-                this.c.creative.width +
-                "px height: " +
-                this.c.creative.height +
-                "px"
-            ),
-              this.c.creative.width > t.width && t.width
-                ? (i = (e = t.width - 20) / n)
-                : this.c.creative.height > t.height && t.height
-                ? (e = n * (i = t.height - 20))
-                : ((e = this.c.creative.width), (i = this.c.creative.height));
-          } else
-            this.log("there were no width and height in bid response"),
+    var r = i(4),
+      a = (function (t) {
+        function e(e) {
+          var i = t.call(this, e) || this;
+          return (i.c = e), i;
+        }
+        return (
+          n(e, t),
+          (e.prototype.prepareParams = function (t) {
+            this.log("Prepare params");
+            var e, i;
+            if (this.c.creative.width && this.c.creative.height) {
+              var n = this.c.creative.width / this.c.creative.height;
               this.log(
-                "Values from template form, width: " +
-                  this.c.userParams.nativeImageMinWidth +
-                  "px \n\t\t\theight=" +
-                  this.c.userParams.nativeImageMinHeight
+                "Values from bid response, width: " +
+                  this.c.creative.width +
+                  "px height: " +
+                  this.c.creative.height +
+                  "px"
               ),
-              (e = this.c.userParams.nativeImageMinWidth),
-              (i = this.c.userParams.nativeImageMinHeight);
-          return { width: e, height: i };
-        }),
-        (e.prototype.limitString = function (t, e) {
-          return t.length > e ? t.substring(0, e - 3) + "..." : t;
-        }),
-        (e.prototype.trackImp = function (t) {
-          for (var e = 0, i = t; e < i.length; e++) {
-            var n = i[e];
-            n && this.tracking(n);
-          }
-        }),
-        (e.prototype.renderAd = function () {
-          var t,
-            e = this;
-          if (
-            (this.log("render"),
-            (this.adPlacement = this.getPlacement(this.c.tagId)),
-            this.log(this.adPlacement),
-            "ad placement" !== this.c.adPosition.selectedPosition)
-          ) {
-            var i = this.findPlaceForAd(this.c.adPosition);
-            if ((this.log("parent", i), !i))
-              return void this.log("no place for ad");
-            i.insertBefore(this.adPlacement, i.firstChild);
-          }
-          var n = this.adPlacement.clientWidth,
-            r = {
-              width: this.c.userParams.formatWidth,
-              height: this.c.userParams.formatHeight,
-            };
-          if (this.c.userParams.formatHeight && this.c.userParams.formatWidth)
-            (r.width = this.c.userParams.formatWidth),
-              (r.height = this.c.userParams.formatHeight);
-          else if (-1 !== this.c.userParams.maxWidth.indexOf("%")) {
-            var a = Number(this.c.userParams.maxWidth.replace("%", ""));
-            r.width = Math.floor((a / 100) * n);
-          } else r.width = Number(this.c.userParams.maxWidth.replace("px", ""));
-          var o = this.prepareParams(r);
-          this.addMyCss(o, r);
-          var s = this.addElement("div", this.adPlacement, {
-              id: "sas_container_" + this.c.insertionId,
-            }),
-            l = this.addElement("a", s, {
-              href: this.c.creative.clickUrl,
-              target: "_blank",
-            }),
-            d =
-              (this.addElement("img", l, {
-                id: "sas_img_" + this.c.insertionId,
-                src: this.c.creative.url,
-                alt: this.c.creative.alt,
+                this.c.creative.width > t.width && t.width
+                  ? ((e = t.width - 20), (i = e / n))
+                  : this.c.creative.height > t.height && t.height
+                  ? ((i = t.height - 20), (e = n * i))
+                  : ((e = this.c.creative.width), (i = this.c.creative.height));
+            } else
+              this.log("there were no width and height in bid response"),
+                this.log(
+                  "Values from template form, width: " +
+                    this.c.userParams.nativeImageMinWidth +
+                    "px \n\t\t\theight=" +
+                    this.c.userParams.nativeImageMinHeight
+                ),
+                (e = this.c.userParams.nativeImageMinWidth),
+                (i = this.c.userParams.nativeImageMinHeight);
+            return { width: e, height: i };
+          }),
+          (e.prototype.limitString = function (t, e) {
+            return t.length > e ? t.substring(0, e - 3) + "..." : t;
+          }),
+          (e.prototype.trackImp = function (t) {
+            for (var e = 0, i = t; e < i.length; e++) {
+              var n = i[e];
+              n && this.tracking(n);
+            }
+          }),
+          (e.prototype.renderAd = function () {
+            var t,
+              e = this;
+            if (
+              (this.log("render"),
+              (this.adPlacement = this.getPlacement(this.c.tagId)),
+              this.log(this.adPlacement),
+              "ad placement" !== this.c.adPosition.selectedPosition)
+            ) {
+              var i = this.findPlaceForAd(this.c.adPosition);
+              if ((this.log("parent", i), !i))
+                return void this.log("no place for ad");
+              i.insertBefore(this.adPlacement, i.firstChild);
+            }
+            var n = this.adPlacement.clientWidth,
+              r = {
+                width: this.c.userParams.formatWidth,
+                height: this.c.userParams.formatHeight,
+              };
+            if (this.c.userParams.formatHeight && this.c.userParams.formatWidth)
+              (r.width = this.c.userParams.formatWidth),
+                (r.height = this.c.userParams.formatHeight);
+            else if (-1 !== this.c.userParams.maxWidth.indexOf("%")) {
+              var a = Number(this.c.userParams.maxWidth.replace("%", ""));
+              r.width = Math.floor((a / 100) * n);
+            } else
+              r.width = Number(this.c.userParams.maxWidth.replace("px", ""));
+            var o = this.prepareParams(r);
+            this.addMyCss(o, r);
+            var s = this.addElement("div", this.adPlacement, {
+                id: "sas_container_" + this.c.insertionId,
               }),
-              this.addElement("div", l, {
-                id: "sas_info_" + this.c.insertionId,
-              }));
-          (this.addElement("span", d, {
-            id: "sas_title_" + this.c.insertionId,
-          }).innerHTML = this.limitString(
-            this.c.userParams.title,
-            this.c.userParams.nativeTitleMaxLength
-          )),
-            (this.addElement("span", d, {
-              id: "sas_data_" + this.c.insertionId,
-            }).innerHTML = this.limitString(
-              this.c.userParams.data,
-              this.c.userParams.nativeDataMaxLength
-            )),
-            (this.addElement("span", l, {
-              id: "sas_sponsor-label_" + this.c.insertionId,
-            }).innerHTML = this.c.userParams.sponsorLabel),
-            (this.addElement("span", l, {
-              id: "sas_text_overlay_" + this.c.insertionId,
-            }).innerHTML = this.c.userParams.textOverlay),
-            this.c.userParams.privacyUrl &&
-              this.addPrivacyLink(this.c.userParams.privacyUrl, s);
-          var h = new Date().getTime();
-          this.viewability.init(
-            s,
-            (((t = {})[this.c.creative.id] = {
-              viewable: [this.prepareTrackingUrl("viewcount", h)],
-              undetermined: [this.prepareTrackingUrl("viewUndetermined", h)],
-            }),
-            t),
-            {}
-          ),
-            (function () {
-              for (
-                var t = s.getElementsByTagName("a"), i = 0, n = Object.keys(t);
-                i < n.length;
-                i++
-              ) {
-                var r = n[i];
-                e.addEvent(t[r], "click", function () {
-                  for (var t = 0, i = e.c.clickTrackers; t < i.length; t++) {
-                    var n = i[t];
-                    e.tracking(e.c.creative.creativeClickCountPixelUrl),
-                      e.tracking(n);
-                  }
-                });
-              }
-            })();
-        }),
-        (e.prototype.addMyCss = function (t, e) {
-          this.log("Add my css");
-          var i,
-            n = !1;
-          t.width + 40 >= 0.5 * e.width
-            ? ((i = "100%"), (n = !0))
-            : (i = e.width - t.width - 35 + "px"),
-            this.addCss(
-              "\n\t\t\t#sas_container_" +
-                this.c.insertionId +
-                " {  \n\t\t\t\tdisplay:block;\n\t\t\t\tbackground-color: #" +
-                this.c.userParams.backgroundColor +
-                ";\n\t\t\t\tpadding: 10px;\n\t\t\t\tfloat: left;\n\t\t\t\tposition: relative;\n\t\t\t\tbox-sizing: border-box;\n\t\t\t\tmax-width: " +
-                (this.c.userParams.formatWidth
-                  ? "none"
-                  : this.c.userParams.maxWidth) +
-                ";\n\t\t\t\twidth: " +
-                e.width +
-                "px;\n\t\t\t\theight: " +
-                (e.height ? e.height + "px" : "auto") +
-                ";\n\t\t\t\toverflow: hidden;\n\t\t\t}\n\t\t\t#sas_container_" +
-                this.c.insertionId +
-                ":hover {\n\t\t\t\t" +
-                this.createMultiBrowserCss(
-                  "box-shadow: inset 0 0 " +
-                    t.width +
-                    "px " +
-                    t.height +
-                    "px rgba(255, 255, 255, 0.1)"
-                ) +
-                ";\n\t\t\t}\n\t\t\t#sas_container_" +
-                this.c.insertionId +
-                " a {\n\t\t\t\tdisplay: block;\n\t\t\t\theight: " +
-                t.height +
-                "px;\n\t\t\t\ttext-decoration: none;\n\t\t\t}\n\t\t\t#sas_img_" +
-                this.c.insertionId +
-                "{\t\n\t\t\t\twidth: " +
-                t.width +
-                "px;\n\t\t\t\theight: " +
-                t.height +
-                "px;\n\t\t\t\tfloat: left;\n\t\t\t\tmargin-right: 10px;\n\t\t\t}\n\t\t\t#sas_info_" +
-                this.c.insertionId +
-                " {\n\t\t\t\tfloat: left;\n\t\t\t\twidth: " +
-                i +
-                ";\n\t\t\t\ttext-align: left;\n\t\t\t}\n\t\t\t#sas_title_" +
-                this.c.insertionId +
-                " {\n\t\t\t\twidth: 100%;\n\t\t\t\tfloat: left;\n\t\t\t\tfont-size: " +
-                this.c.userParams.fontSize +
-                ";\n\t\t\t\tcolor: #" +
-                this.c.userParams.titleColor +
-                ";\n\t\t\t\tmargin: " +
-                (n ? 10 : 0) +
-                "px 0px 0px 0px;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t\t#sas_data_" +
-                this.c.insertionId +
-                " {\n\t\t\t\tmargin: 0px;\n\t\t\t\twidth: 100%;\n\t\t\t\tfloat: left;\n\t\t\t\tcolor: #" +
-                this.c.userParams.descrColor +
-                ";\n\t\t\t\ttext-align: justify;\n\t\t\t}\n\t\t\t#sas_sponsor-label_" +
-                this.c.insertionId +
-                " {\n\t\t\t\tcolor: #" +
-                this.c.userParams.sponsorLabelColor +
-                ";\n\t\t\t\tfloat: " +
-                (n ? "left" : "none") +
-                ";\n\t\t\t\twidth: " +
-                (n ? "100%" : "auto") +
-                ";\n\t\t\t\ttext-align: right;\n\t\t\t\tmargin: 0;\n\t\t\t\tposition: " +
-                (n ? "static" : "absolute") +
-                ";\n\t\t\t\tbottom: " +
-                (n ? "0" : "10") +
-                "px;\n\t\t\t\tright: " +
-                (n ? "0" : "10") +
-                "px;\n\t\t\t}\n\t\t\t#sas_privacy_" +
-                this.c.insertionId +
-                ' {\n\t\t\t\tbackground: url("//ced-ns.sascdn.com/diff/templates/js/adplayer/oba_icon_retina.png");\n\t\t\t\tbackground-size: 100%;\n\t\t\t\tbackground-repeat: no-repeat;\n\t\t\t\tdisplay: block;\n\t\t\t\twidth: 15px;\n\t\t\t\theight: 15px;\n\t\t\t\tposition: absolute;\n\t\t\t\tright: 1px;\n\t\t\t\ttop: 1px;\n\t\t\t\tz-index: 10;\n\t\t\t}\n\t\t'
-            );
-        }),
-        (e.prototype.init = function () {
-          var t = this;
-          this.executeCustomScripts(
-            this.c.customScript,
-            [this.c.creative],
-            this.c.isAsync,
-            this.c.tagId
-          ),
-            "ad placement" === this.c.adPosition.selectedPosition
-              ? this.renderAd()
-              : this.docReady(function () {
-                  return t.renderAd();
+              l = this.addElement("a", s, {
+                href: this.c.creative.clickUrl,
+                target: "_blank",
+              }),
+              d =
+                (this.addElement("img", l, {
+                  id: "sas_img_" + this.c.insertionId,
+                  src: this.c.creative.url,
+                  alt: this.c.creative.alt,
                 }),
-            this.trackImp(this.c.impUrls),
-            this.c.eventTrackers &&
-              this.trackEvents(JSON.parse(this.c.eventTrackers));
-        }),
-        (e.prototype.addPrivacyLink = function (t, e) {
-          var i = document.createElement("a");
-          (i.id = "sas_privacy_" + this.c.insertionId),
-            i.setAttribute("href", t),
-            i.setAttribute("target", "_blank"),
-            e.firstChild.appendChild(i);
-        }),
-        (e.prototype.trackEvents = function (t) {
-          var e = this;
-          t.forEach(function (t) {
-            if (e.isEventTrackerValid(t))
-              if (1 === t.method) e.tracking(t.url);
-              else if (2 === t.method) {
-                var i = document.createElement("script");
-                (i.src = t.url), e.d.getElementById(e.c.tagId).appendChild(i);
-              }
-          });
-        }),
-        (e.prototype.isEventTrackerValid = function (t) {
-          return !!(t.event && 1 === t.event && t.method && t.url);
-        }),
-        e
-      );
-    })(i(4).SasAd);
-    (e.EasyNativeAd = r), (window.EasyNativeAd = r);
+                this.addElement("div", l, {
+                  id: "sas_info_" + this.c.insertionId,
+                }));
+            (this.addElement("span", d, {
+              id: "sas_title_" + this.c.insertionId,
+            }).innerHTML = this.limitString(
+              this.c.userParams.title,
+              this.c.userParams.nativeTitleMaxLength
+            )),
+              (this.addElement("span", d, {
+                id: "sas_data_" + this.c.insertionId,
+              }).innerHTML = this.limitString(
+                this.c.userParams.data,
+                this.c.userParams.nativeDataMaxLength
+              )),
+              (this.addElement("span", l, {
+                id: "sas_sponsor-label_" + this.c.insertionId,
+              }).innerHTML = this.c.userParams.sponsorLabel),
+              (this.addElement("span", l, {
+                id: "sas_text_overlay_" + this.c.insertionId,
+              }).innerHTML = this.c.userParams.textOverlay),
+              this.c.userParams.privacyUrl &&
+                this.addPrivacyLink(this.c.userParams.privacyUrl, s);
+            var h = new Date().getTime();
+            this.viewability.init(
+              s,
+              ((t = {}),
+              (t[this.c.creative.id] = {
+                viewable: [this.prepareTrackingUrl("viewcount", h)],
+                undetermined: [this.prepareTrackingUrl("viewUndetermined", h)],
+              }),
+              t),
+              {}
+            ),
+              (function () {
+                for (
+                  var t = s.getElementsByTagName("a"),
+                    i = 0,
+                    n = Object.keys(t);
+                  i < n.length;
+                  i++
+                ) {
+                  var r = n[i];
+                  e.addEvent(t[r], "click", function () {
+                    for (var t = 0, i = e.c.clickTrackers; t < i.length; t++) {
+                      var n = i[t];
+                      e.tracking(e.c.creative.creativeClickCountPixelUrl),
+                        e.tracking(n);
+                    }
+                  });
+                }
+              })();
+          }),
+          (e.prototype.addMyCss = function (t, e) {
+            this.log("Add my css");
+            var i,
+              n = !1;
+            t.width + 40 >= 0.5 * e.width
+              ? ((i = "100%"), (n = !0))
+              : (i = e.width - t.width - 35 + "px"),
+              this.addCss(
+                "\n\t\t\t#sas_container_" +
+                  this.c.insertionId +
+                  " {  \n\t\t\t\tdisplay:block;\n\t\t\t\tbackground-color: #" +
+                  this.c.userParams.backgroundColor +
+                  ";\n\t\t\t\tpadding: 10px;\n\t\t\t\tfloat: left;\n\t\t\t\tposition: relative;\n\t\t\t\tbox-sizing: border-box;\n\t\t\t\tmax-width: " +
+                  (this.c.userParams.formatWidth
+                    ? "none"
+                    : this.c.userParams.maxWidth) +
+                  ";\n\t\t\t\twidth: " +
+                  e.width +
+                  "px;\n\t\t\t\theight: " +
+                  (e.height ? e.height + "px" : "auto") +
+                  ";\n\t\t\t\toverflow: hidden;\n\t\t\t}\n\t\t\t#sas_container_" +
+                  this.c.insertionId +
+                  ":hover {\n\t\t\t\t" +
+                  this.createMultiBrowserCss(
+                    "box-shadow: inset 0 0 " +
+                      t.width +
+                      "px " +
+                      t.height +
+                      "px rgba(255, 255, 255, 0.1)"
+                  ) +
+                  ";\n\t\t\t}\n\t\t\t#sas_container_" +
+                  this.c.insertionId +
+                  " a {\n\t\t\t\tdisplay: block;\n\t\t\t\theight: " +
+                  t.height +
+                  "px;\n\t\t\t\ttext-decoration: none;\n\t\t\t}\n\t\t\t#sas_img_" +
+                  this.c.insertionId +
+                  "{\t\n\t\t\t\twidth: " +
+                  t.width +
+                  "px;\n\t\t\t\theight: " +
+                  t.height +
+                  "px;\n\t\t\t\tfloat: left;\n\t\t\t\tmargin-right: 10px;\n\t\t\t}\n\t\t\t#sas_info_" +
+                  this.c.insertionId +
+                  " {\n\t\t\t\tfloat: left;\n\t\t\t\twidth: " +
+                  i +
+                  ";\n\t\t\t\ttext-align: left;\n\t\t\t}\n\t\t\t#sas_title_" +
+                  this.c.insertionId +
+                  " {\n\t\t\t\twidth: 100%;\n\t\t\t\tfloat: left;\n\t\t\t\tfont-size: " +
+                  this.c.userParams.fontSize +
+                  ";\n\t\t\t\tcolor: #" +
+                  this.c.userParams.titleColor +
+                  ";\n\t\t\t\tmargin: " +
+                  (n ? 10 : 0) +
+                  "px 0px 0px 0px;\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t\t#sas_data_" +
+                  this.c.insertionId +
+                  " {\n\t\t\t\tmargin: 0px;\n\t\t\t\twidth: 100%;\n\t\t\t\tfloat: left;\n\t\t\t\tcolor: #" +
+                  this.c.userParams.descrColor +
+                  ";\n\t\t\t\ttext-align: justify;\n\t\t\t}\n\t\t\t#sas_sponsor-label_" +
+                  this.c.insertionId +
+                  " {\n\t\t\t\tcolor: #" +
+                  this.c.userParams.sponsorLabelColor +
+                  ";\n\t\t\t\tfloat: " +
+                  (n ? "left" : "none") +
+                  ";\n\t\t\t\twidth: " +
+                  (n ? "100%" : "auto") +
+                  ";\n\t\t\t\ttext-align: right;\n\t\t\t\tmargin: 0;\n\t\t\t\tposition: " +
+                  (n ? "static" : "absolute") +
+                  ";\n\t\t\t\tbottom: " +
+                  (n ? "0" : "10") +
+                  "px;\n\t\t\t\tright: " +
+                  (n ? "0" : "10") +
+                  "px;\n\t\t\t}\n\t\t\t#sas_privacy_" +
+                  this.c.insertionId +
+                  ' {\n\t\t\t\tbackground: url("//ced-ns.sascdn.com/diff/templates/js/adplayer/oba_icon_retina.png");\n\t\t\t\tbackground-size: 100%;\n\t\t\t\tbackground-repeat: no-repeat;\n\t\t\t\tdisplay: block;\n\t\t\t\twidth: 15px;\n\t\t\t\theight: 15px;\n\t\t\t\tposition: absolute;\n\t\t\t\tright: 1px;\n\t\t\t\ttop: 1px;\n\t\t\t\tz-index: 10;\n\t\t\t}\n\t\t'
+              );
+          }),
+          (e.prototype.init = function () {
+            var t = this;
+            this.executeCustomScripts(
+              this.c.customScript,
+              [this.c.creative],
+              this.c.isAsync,
+              this.c.tagId
+            ),
+              "ad placement" === this.c.adPosition.selectedPosition
+                ? this.renderAd()
+                : this.docReady(function () {
+                    return t.renderAd();
+                  }),
+              this.trackImp(this.c.impUrls),
+              this.c.eventTrackers &&
+                this.trackEvents(JSON.parse(this.c.eventTrackers));
+          }),
+          (e.prototype.addPrivacyLink = function (t, e) {
+            var i = document.createElement("a");
+            (i.id = "sas_privacy_" + this.c.insertionId),
+              i.setAttribute("href", t),
+              i.setAttribute("target", "_blank"),
+              e.firstChild.appendChild(i);
+          }),
+          (e.prototype.trackEvents = function (t) {
+            var e = this;
+            t.forEach(function (t) {
+              if (e.isEventTrackerValid(t))
+                if (1 === t.method) e.tracking(t.url);
+                else if (2 === t.method) {
+                  var i = document.createElement("script");
+                  (i.src = t.url), e.d.getElementById(e.c.tagId).appendChild(i);
+                }
+            });
+          }),
+          (e.prototype.isEventTrackerValid = function (t) {
+            return !!(t.event && 1 === t.event && t.method && t.url);
+          }),
+          e
+        );
+      })(r.SasAd);
+    (e.EasyNativeAd = a), (window.EasyNativeAd = a);
   },
   3: function (t, e, i) {
     "use strict";
@@ -1078,19 +1097,20 @@
       })();
     Object.defineProperty(e, "__esModule", { value: !0 }),
       (e.Viewability = void 0);
-    var r = (function (t) {
-      function e() {
-        return t.call(this) || this;
-      }
-      return (
-        n(e, t),
-        (e.prototype.init = function (t, e, i) {
-          this.log("init"), this.start(t, e, i);
-        }),
-        e
-      );
-    })(i(2).ViewabilityCore);
-    (e.Viewability = r), (window.Viewability = r);
+    var r = i(2),
+      a = (function (t) {
+        function e() {
+          return t.call(this) || this;
+        }
+        return (
+          n(e, t),
+          (e.prototype.init = function (t, e, i) {
+            this.log("init"), this.start(t, e, i);
+          }),
+          e
+        );
+      })(r.ViewabilityCore);
+    (e.Viewability = a), (window.Viewability = a);
   },
   4: function (t, e, i) {
     "use strict";
@@ -1264,7 +1284,7 @@
                 var m,
                   g = this.w,
                   v = this.d;
-                if (null == d ? void 0 : d.isSafeFrame)
+                if (null === d || void 0 === d ? void 0 : d.isSafeFrame)
                   if (window.$sf) this.addSafeFrame(e.id, u, p, c, g, v, a, o);
                   else {
                     var y = document.createElement("script");
@@ -1288,7 +1308,8 @@
                     id: f + "_iframe",
                   })),
                     (g = m.contentWindow || m),
-                    (v = m.contentWindow.document).open("text/html", "replace"),
+                    (v = m.contentWindow.document),
+                    v.open("text/html", "replace"),
                     v.write(
                       "\n\t\t\t\t\t<!DOCTYPE html>\n\t\t\t\t\t<head>\n\t\t\t\t\t\t<script>var inDapIF = " +
                         i +
@@ -1351,16 +1372,17 @@
               } else e.innerHTML = this.addImage(t);
               if (t.type && c)
                 if (r || this.isReady) {
-                  var P = this.addElement("iframe", e, {
-                    src: "about:blank",
-                    frameBorder: 0,
-                    allow: "autoplay;fullscreen;",
-                    scrolling: "no",
-                    marginheight: 0,
-                    marginwidth: 0,
-                    style:
-                      "width:1px;height:0px;visibility:hidden;position:absolute;top:0",
-                  }).contentWindow.document;
+                  var k = this.addElement("iframe", e, {
+                      src: "about:blank",
+                      frameBorder: 0,
+                      allow: "autoplay;fullscreen;",
+                      scrolling: "no",
+                      marginheight: 0,
+                      marginwidth: 0,
+                      style:
+                        "width:1px;height:0px;visibility:hidden;position:absolute;top:0",
+                    }),
+                    P = k.contentWindow.document;
                   P.open("text/html", "replace"),
                     P.write(
                       '\n\t\t\t\t\t<!DOCTYPE html>\n\t\t\t\t\t\t<head></head>\n\t\t\t\t\t\t<body style="padding:0;margin:0 auto">' +
@@ -1383,7 +1405,8 @@
                     "autoplay;fullscreen;"
                   ),
                   e ||
-                    ((e = this.d.createElement("DIV")).setAttribute("id", t),
+                    ((e = this.d.createElement("DIV")),
+                    e.setAttribute("id", t),
                     this.friendlyIframe.parentNode.insertBefore(
                       e,
                       this.friendlyIframe
@@ -1516,19 +1539,18 @@
                 n = [],
                 r = this.d.createElement("div");
               (r.id = "sas_intextContainer_" + this.c.insertionId),
-                "" === (n = t.idNames.split(";"))[n.length - 1] &&
-                  n.splice(n.length - 1, 1);
+                (n = t.idNames.split(";")),
+                "" === n[n.length - 1] && n.splice(n.length - 1, 1);
               for (var a = 0, o = n; a < o.length; a++) {
                 switch (
                   ((i = o[a].replace(/^\s+|\s+$/g, "")), t.selectedPosition)
                 ) {
                   case "paragraph by id":
-                  case "specified element by id":
                     e = this.d.getElementById(i);
                     break;
                   case "paragraph by class name":
-                  case "specified element by class name":
-                    (e = this.d.getElementsByClassName(i)).length && (e = e[0]);
+                    (e = this.d.getElementsByClassName(i)),
+                      e.length && (e = e[0]);
                     break;
                   case "paragraph by item prop":
                     for (
@@ -1544,6 +1566,13 @@
                         break;
                       }
                     }
+                    break;
+                  case "specified element by id":
+                    e = this.d.getElementById(i);
+                    break;
+                  case "specified element by class name":
+                    (e = this.d.getElementsByClassName(i)),
+                      e.length && (e = e[0]);
                 }
                 if (
                   ("specified element by id" === t.selectedPosition ||
@@ -1783,47 +1812,33 @@
                   this.c.insertionId +
                   "{\n\t\t\t\tmargin:20px auto 0;\n\t\t\t\tposition:relative;\n\t\t\t\twidth:416px;\n\t\t\t\theight:742px;\n\t\t\t\tbackground-image:url(http://gallery.smartadserver.com/demo_mobile/image/Phone_Hybrid.png);\n\t\t\t}\n\t\t\ttable img{\n\t\t\t\tdisplay:none;\n\t\t\t}\n\t\t"
               );
-              for (
-                var e,
-                  i =
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vestibulum ullamcorper orci et e\n\t\tleifend. Morbi a magna ac dolor porta condimentum. ut, commodo a enim. Nulla ac dui vel odio rutrum rh tellu\n\t\ts. Quisque euismod mattis massa. Integer laoreet sapien quis eros eleifend auctor. Aenean faucibus augue nec\n\t\t dolor congue posuere. Aliquam et massa tellus. Sed commodo, orci dictum porta scelerisque, risus neque vulp\n\t\t utate enim, sit amet fermentum dui velit ac erat. Aenean faucibus augue nec dolor congue posuere. Aliquam e\n\t\t t massa tellus. Sed commodo, orci dictum porta scelerisque, risus neque vulputate enim, sit amet fermentum\n\t\t dui velit ac erat.",
-                  n =
-                    "<div>" +
-                    (i =
-                      "<" +
-                      t.paragraphType +
-                      ">" +
-                      i +
-                      "</" +
-                      t.paragraphType +
-                      ">") +
-                    "</div>",
-                  r = "",
-                  a = 0;
-                a < 4;
-                a++
-              )
-                r += i;
-              i = r;
-              for (var o = "", s = 0; s < 2; s++) o += n;
-              (n = o),
+              var e =
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vestibulum ullamcorper orci et e\n\t\tleifend. Morbi a magna ac dolor porta condimentum. ut, commodo a enim. Nulla ac dui vel odio rutrum rh tellu\n\t\ts. Quisque euismod mattis massa. Integer laoreet sapien quis eros eleifend auctor. Aenean faucibus augue nec\n\t\t dolor congue posuere. Aliquam et massa tellus. Sed commodo, orci dictum porta scelerisque, risus neque vulp\n\t\t utate enim, sit amet fermentum dui velit ac erat. Aenean faucibus augue nec dolor congue posuere. Aliquam e\n\t\t t massa tellus. Sed commodo, orci dictum porta scelerisque, risus neque vulputate enim, sit amet fermentum\n\t\t dui velit ac erat.";
+              e =
+                "<" + t.paragraphType + ">" + e + "</" + t.paragraphType + ">";
+              for (var i = "<div>" + e + "</div>", n = "", r = 0; r < 4; r++)
+                n += e;
+              e = n;
+              for (var a = "", o = 0; o < 2; o++) a += i;
+              (i = a),
                 "ad placement" === t.selectedPosition &&
                   ((t.selectedPosition = "specified element by id"),
-                  (t.idNames = this.c.tagId)),
-                (e =
-                  "paragraph by id" === t.selectedPosition ||
-                  "specified element by id" === t.selectedPosition
-                    ? "id"
-                    : "class");
+                  (t.idNames = this.c.tagId));
+              var s;
+              s =
+                "paragraph by id" === t.selectedPosition ||
+                "specified element by id" === t.selectedPosition
+                  ? "id"
+                  : "class";
               var l = [];
-              "" === (l = t.idNames.split(";"))[l.length - 1] &&
-                l.splice(l.length - 1, 1);
+              (l = t.idNames.split(";")),
+                "" === l[l.length - 1] && l.splice(l.length - 1, 1);
               var d =
                 '<img src="http://www.saspreview.com/images/preview-dog.png" width="330" alt="" /><h1>This is\n\t\t an example of article</h1>';
               "specified element by id" === t.selectedPosition ||
               "specified element by class name" === t.selectedPosition
-                ? (d += n + "<div " + e + '="' + l[0] + '"></div>' + n)
-                : (d += "<div " + e + '="' + l[0] + '">' + i + "</div>");
+                ? (d += i + "<div " + s + '="' + l[0] + '"></div>' + i)
+                : (d += "<div " + s + '="' + l[0] + '">' + e + "</div>");
               var h = this.addElement("div", this.d.body, {
                   id: "iframeDiv_" + this.c.insertionId,
                 }),
@@ -1854,7 +1869,8 @@
               var i;
               this.viewability.init(
                 t,
-                (((i = {})[this.c.creative.id] = {
+                ((i = {}),
+                (i[this.c.creative.id] = {
                   viewable: [
                     this.prepareTrackingUrl("viewcount", this.c.sessionId),
                   ],
@@ -1877,10 +1893,12 @@
                 i = document.getElementById(
                   "sasCustomScript_" + this.c.insertionId
                 ),
-                n = e || i;
-              return this.c.isAsync && n
-                ? (n.contentWindow || n)[t]
-                : window[t];
+                n = e || i,
+                r = null;
+              if (this.c.isAsync && n) {
+                r = (n.contentWindow || n)[t];
+              } else r = window[t];
+              return r;
             }),
             (e.prototype.getParentWidth = function (t) {
               for (; t && t.parentNode; ) {
@@ -1987,22 +2005,22 @@
             }),
             (e.prototype.addSafeFrame = function (t, e, i, n, r, a, o, s) {
               var l = this;
-              this.log("addSafeFrame", t, e, i, n),
-                new window.$sf.host.Config({
-                  renderFile:
-                    "//ced-ns.sascdn.com/safeframe/safeframe-api/frame.html",
-                  onEndPosRender: function () {
-                    (l.ifrContainer = document.getElementById(t)),
-                      s &&
-                        (l.log("iframe load"),
-                        s(r, a, document.getElementById(t)));
-                  },
-                  onStartPosRender: function () {
-                    o && (l.log("iframe ready"), o(r, a));
-                  },
-                }),
-                new window.$sf.host.PosConfig({ id: t, w: e, h: i, dest: t }),
-                window.$sf.host.render(new window.$sf.host.Position(t, n));
+              this.log("addSafeFrame", t, e, i, n);
+              new window.$sf.host.Config({
+                renderFile:
+                  "//ced-ns.sascdn.com/safeframe/safeframe-api/frame.html",
+                onEndPosRender: function () {
+                  (l.ifrContainer = document.getElementById(t)),
+                    s &&
+                      (l.log("iframe load"),
+                      s(r, a, document.getElementById(t)));
+                },
+                onStartPosRender: function () {
+                  o && (l.log("iframe ready"), o(r, a));
+                },
+              }),
+                new window.$sf.host.PosConfig({ id: t, w: e, h: i, dest: t });
+              window.$sf.host.render(new window.$sf.host.Position(t, n));
             }),
             e
           );
